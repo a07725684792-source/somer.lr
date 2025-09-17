@@ -1,0 +1,982 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e2a38">
+    <meta name="description" content="سومر - محاكي الذاكرة الذكي للطلاب">
+    <title>سومر - محاكي الذاكرة الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #1e2a38;
+            --primary-turquoise: #4fd1c5;
+            --primary-white: #ffffff;
+            --secondary-gray: #f8f9fa;
+            --text-dark: #2d3748;
+            --text-light: #a0aec0;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary-dark: #1a202c;
+            --primary-turquoise: #4fd1c5;
+            --primary-white: #2d3748;
+            --secondary-gray: #2d3748;
+            --text-dark: #e2e8f0;
+            --text-light: #a0aec0;
+            --card-bg: #2d3748;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary-gray);
+            color: var(--text-dark);
+            transition: var(--transition);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: 100px;
+        }
+
+        /* شريط التنقل العلوي */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary-dark);
+            color: var(--primary-white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            height: 80px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-turquoise));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid var(--primary-turquoise);
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-white);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--primary-white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(79, 209, 197, 0.2);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--primary-white);
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(79, 209, 197, 0.2);
+        }
+
+        /* المحتوى الرئيسي */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(79, 209, 197, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        h2 i {
+            color: var(--primary-turquoise);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-dark);
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-turquoise);
+            box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.3);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: var(--primary-turquoise);
+            color: var(--primary-dark);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background-color: #38b2ac;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-gray);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+
+        .btn-success {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #f56565;
+            color: white;
+        }
+
+        .flip-card {
+            perspective: 1000px;
+            margin-bottom: 2rem;
+            height: 250px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            background-color: var(--card-bg);
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+            overflow-y: auto;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .review-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-turquoise);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .import-export {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-turquoise);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            color: var(--primary-turquoise);
+        }
+
+        /* التكيف مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-direction: column;
+                height: auto;
+                position: relative;
+            }
+            
+            body {
+                padding-top: 0;
+            }
+            
+            .nav-links {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .review-controls {
+                flex-direction: column;
+            }
+            
+            .flip-card {
+                height: 200px;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل العلوي -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <div class="logo">
+                <img src="https://iili.io/KREI5cF.md.png" alt="شعار سومر">
+            </div>
+            <div class="brand-name">سومر</div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#" class="nav-link">الرئيسية</a>
+            <a href="#" class="nav-link">هذا الموقع</a>
+            <a href="#" class="nav-link">الموقع الآخر</a>
+            <button class="theme-toggle" id="theme-toggle">🌙</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- أزرار التنقل بين الأقسام -->
+        <div class="card">
+            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <button class="nav-tab active clickable" data-page="cards-page">
+                    <i class="fas fa-layer-group"></i> البطاقات
+                </button>
+                <button class="nav-tab clickable" data-page="add-page">
+                    <i class="fas fa-plus-circle"></i> إضافة بطاقة
+                </button>
+                <button class="nav-tab clickable" data-page="review-page">
+                    <i class="fas fa-sync-alt"></i> مراجعة
+                </button>
+                <button class="nav-tab clickable" data-page="stats-page">
+                    <i class="fas fa-chart-pie"></i> الإحصائيات
+                </button>
+            </div>
+        </div>
+
+        <!-- قسم البطاقات -->
+        <section id="cards-page" class="section active">
+            <div class="card">
+                <h2><i class="fas fa-layer-group"></i> البطاقات التعليمية</h2>
+                <div id="cards-container" class="cards-grid">
+                    <!-- البطاقات سيتم إضافتها هنا عبر JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم إضافة بطاقة جديدة -->
+        <section id="add-page" class="section">
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> إضافة بطاقة جديدة</h2>
+                <div class="form-group">
+                    <label for="card-question">السؤال / العنوان</label>
+                    <input type="text" id="card-question" placeholder="أدخل السؤال أو العنوان هنا">
+                </div>
+                <div class="form-group">
+                    <label for="card-answer">الجواب / المعلومة</label>
+                    <textarea id="card-answer" placeholder="أدخل الجواب أو المعلومة هنا"></textarea>
+                </div>
+                <button id="add-card-btn" class="clickable">
+                    <i class="fas fa-plus"></i> إضافة البطاقة
+                </button>
+            </div>
+        </section>
+
+        <!-- قسم المراجعة -->
+        <section id="review-page" class="section">
+            <div class="card">
+                <h2><i class="fas fa-sync-alt"></i> مراجعة البطاقات</h2>
+                <p style="text-align: center; margin-bottom: 1.5rem;">اضغط على البطاقة لقلبها ومشاهدة الجواب</p>
+                
+                <div id="review-container">
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <p>لا توجد بطاقات للمراجعة حالياً</p>
+                        <button id="start-review" class="clickable" style="margin-top: 1.5rem;">
+                            <i class="fas fa-play"></i> ابدأ المراجعة
+                        </button>
+                    </div>
+                </div>
+
+                <div id="review-controls" class="review-controls" style="display: none;">
+                    <button id="remember-btn" class="btn-success clickable">
+                        <i class="fas fa-check"></i> تذكرتها
+                    </button>
+                    <button id="forgot-btn" class="btn-danger clickable">
+                        <i class="fas fa-times"></i> نسيتها
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم الإحصائيات -->
+        <section id="stats-page" class="section">
+            <div class="card">
+                <h2><i class="fas fa-chart-pie"></i> إحصائيات التعلم</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-cards">0</div>
+                        <div class="stat-label">البطاقات الكلية</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="correct-answers">0</div>
+                        <div class="stat-label">الإجابات الصحيحة</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="wrong-answers">0</div>
+                        <div class="stat-label">الإجابات الخاطئة</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="success-rate">0%</div>
+                        <div class="stat-label">نسبة النجاح</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-chart-line"></i> تقدم التعلم</h3>
+                    <canvas id="progress-chart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-database"></i> إدارة البيانات</h3>
+                    <p>يمكنك تصدير بطاقاتك لاستخدامها على جهاز آخر أو استيراد بطاقات سابقة</p>
+                    
+                    <div class="import-export">
+                        <button id="export-btn" class="clickable">
+                            <i class="fas fa-file-export"></i> تصدير البطاقات
+                        </button>
+                        <button id="import-btn" class="btn-secondary clickable">
+                            <i class="fas fa-file-import"></i> استيراد البطاقات
+                        </button>
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress" id="storage-progress" style="width: 0%;"></div>
+                    </div>
+                    <p id="storage-text" style="text-align: center;">مساحة التخزين المستخدمة: 0KB / 5MB</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // العناصر الرئيسية في الواجهة
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const sections = document.querySelectorAll('.section');
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // عناصر قسم البطاقات
+        const cardsContainer = document.getElementById('cards-container');
+        
+        // عناصر قسم الإضافة
+        const cardQuestionInput = document.getElementById('card-question');
+        const cardAnswerInput = document.getElementById('card-answer');
+        const addCardBtn = document.getElementById('add-card-btn');
+        
+        // عناصر قسم المراجعة
+        const reviewContainer = document.getElementById('review-container');
+        const startReviewBtn = document.getElementById('start-review');
+        const reviewControls = document.getElementById('review-controls');
+        const rememberBtn = document.getElementById('remember-btn');
+        const forgotBtn = document.getElementById('forgot-btn');
+        
+        // عناصر قسم الإحصائيات
+        const totalCardsEl = document.getElementById('total-cards');
+        const correctAnswersEl = document.getElementById('correct-answers');
+        const wrongAnswersEl = document.getElementById('wrong-answers');
+        const successRateEl = document.getElementById('success-rate');
+        const progressChart = document.getElementById('progress-chart');
+        const exportBtn = document.getElementById('export-btn');
+        const importBtn = document.getElementById('import-btn');
+        const importFile = document.getElementById('import-file');
+        const storageProgress = document.getElementById('storage-progress');
+        const storageText = document.getElementById('storage-text');
+        
+        // بيانات التطبيق
+        let cards = JSON.parse(localStorage.getItem('sumer_cards')) || [];
+        let stats = JSON.parse(localStorage.getItem('sumer_stats')) || { total: 0, correct: 0, wrong: 0 };
+        let currentReviewCard = null;
+        let darkMode = localStorage.getItem('sumer_darkMode') === 'true';
+        
+        // تهيئة التطبيق
+        function init() {
+            // تهيئة الوضع الليلي
+            if (darkMode) {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+            
+            // تحديث واجهة البطاقات
+            updateCardsDisplay();
+            
+            // تحديث الإحصائيات
+            updateStats();
+            
+            // تحديث مساحة التخزين
+            updateStorageUsage();
+            
+            // إعداد مستمعي الأحداث
+            setupEventListeners();
+        }
+        
+        // إعداد مستمعي الأحداث
+        function setupEventListeners() {
+            // التنقل بين الأقسام
+            navTabs.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetSection = button.dataset.page;
+                    switchSection(targetSection);
+                    
+                    navTabs.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                });
+            });
+            
+            // تبديل الوضع الليلي
+            themeToggle.addEventListener('click', toggleDarkMode);
+            
+            // إضافة بطاقة جديدة
+            addCardBtn.addEventListener('click', addNewCard);
+            
+            // بدء المراجعة
+            startReviewBtn.addEventListener('click', startReview);
+            
+            // التعامل مع إجابات المراجعة
+            rememberBtn.addEventListener('click', () => handleReviewAnswer(true));
+            forgotBtn.addEventListener('click', () => handleReviewAnswer(false));
+            
+            // تصدير واستيراد البطاقات
+            exportBtn.addEventListener('click', exportCards);
+            importBtn.addEventListener('click', () => importFile.click());
+            importFile.addEventListener('change', importCards);
+        }
+        
+        // تبديل بين أقسام الموقع
+        function switchSection(sectionId) {
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+        
+        // تبديل الوضع الليلي
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            localStorage.setItem('sumer_darkMode', darkMode);
+            
+            if (darkMode) {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                document.body.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+            }
+        }
+        
+        // تحديث عرض البطاقات
+        function updateCardsDisplay() {
+            cardsContainer.innerHTML = '';
+            
+            if (cards.length === 0) {
+                cardsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-file-alt"></i>
+                        <p>لا توجد بطاقات حتى الآن</p>
+                        <p>إضغط على قسم "إضافة بطاقة" لإنشاء بطاقتك الأولى</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'flip-card clickable';
+                cardElement.innerHTML = `
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>${card.question}</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>${card.answer}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; text-align: center;">
+                        <small>المستوى: ${card.level} | المراجعة القادمة: ${formatNextReview(card.nextReview)}</small>
+                    </div>
+                `;
+                
+                cardElement.addEventListener('click', () => {
+                    cardElement.classList.toggle('flipped');
+                });
+                
+                cardsContainer.appendChild(cardElement);
+            });
+        }
+        
+        // تنسيق تاريخ المراجعة القادمة
+        function formatNextReview(timestamp) {
+            const now = Date.now();
+            const diff = timestamp - now;
+            
+            if (diff <= 0) return 'الآن';
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) {
+                return `بعد ${days} يوم`;
+            } else if (hours > 0) {
+                return `بعد ${hours} ساعة`;
+            } else {
+                return 'أقل من ساعة';
+            }
+        }
+        
+        // إضافة بطاقة جديدة
+        function addNewCard() {
+            const question = cardQuestionInput.value.trim();
+            const answer = cardAnswerInput.value.trim();
+            
+            if (!question || !answer) {
+                alert('يرجى ملء كل من السؤال والجواب');
+                return;
+            }
+            
+            const newCard = {
+                id: Date.now(),
+                question,
+                answer,
+                level: 0,
+                nextReview: Date.now(),
+                createdAt: Date.now()
+            };
+            
+            cards.push(newCard);
+            saveCards();
+            
+            cardQuestionInput.value = '';
+            cardAnswerInput.value = '';
+            
+            updateCardsDisplay();
+            updateStats();
+            updateStorageUsage();
+            
+            alert('تمت إضافة البطاقة بنجاح!');
+        }
+        
+        // بدء عملية المراجعة
+        function startReview() {
+            const now = Date.now();
+            const cardsToReview = cards.filter(card => card.nextReview <= now);
+            
+            if (cardsToReview.length === 0) {
+                reviewContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>لا توجد بطاقات تحتاج للمراجعة حالياً</p>
+                        <p>عد لاحقاً للمزيد من المراجعة</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // اختيار بطاقة عشوائية من البطاقات التي تحتاج مراجعة
+            currentReviewCard = cardsToReview[Math.floor(Math.random() * cardsToReview.length)];
+            
+            reviewContainer.innerHTML = `
+                <div class="flip-card clickable" id="review-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <h3>${currentReviewCard.question}</h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>${currentReviewCard.answer}</p>
+                        </div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 10px;">اضغط على البطاقة لرؤية الجواب</p>
+            `;
+            
+            const reviewCardElement = document.getElementById('review-card');
+            reviewCardElement.addEventListener('click', () => {
+                reviewCardElement.classList.toggle('flipped');
+            });
+            
+            reviewControls.style.display = 'flex';
+        }
+        
+        // معالجة إجابة المراجعة
+        function handleReviewAnswer(remembered) {
+            if (!currentReviewCard) return;
+            
+            // تحديث إحصائيات الإجابات
+            if (remembered) {
+                stats.correct++;
+                currentReviewCard.level++;
+            } else {
+                stats.wrong++;
+                currentReviewCard.level = Math.max(0, currentReviewCard.level - 1);
+            }
+            
+            stats.total++;
+            
+            // حساب وقت المراجعة التالية بناءً على المستوى
+            const now = Date.now();
+            const levelIntervals = [
+                2 * 60 * 60 * 1000,    // 2 ساعات للمستوى 0
+                24 * 60 * 60 * 1000,   // 1 يوم للمستوى 1
+                3 * 24 * 60 * 60 * 1000, // 3 أيام للمستوى 2
+                7 * 24 * 60 * 60 * 1000, // أسبوع للمستوى 3
+                14 * 24 * 60 * 60 * 1000, // أسبوعين للمستوى 4
+                30 * 24 * 60 * 60 * 1000  // شهر للمستوى 5 فأكثر
+            ];
+            
+            const intervalIndex = Math.min(currentReviewCard.level, levelIntervals.length - 1);
+            currentReviewCard.nextReview = now + levelIntervals[intervalIndex];
+            
+            // حفظ التغييرات
+            saveCards();
+            localStorage.setItem('sumer_stats', JSON.stringify(stats));
+            
+            // تحديث العرض
+            updateStats();
+            startReview();
+        }
+        
+        // تحديث الإحصائيات
+        function updateStats() {
+            totalCardsEl.textContent = cards.length;
+            correctAnswersEl.textContent = stats.correct;
+            wrongAnswersEl.textContent = stats.wrong;
+            
+            const totalAnswers = stats.correct + stats.wrong;
+            const successRate = totalAnswers > 0 ? Math.round((stats.correct / totalAnswers) * 100) : 0;
+            successRateEl.textContent = `${successRate}%`;
+            
+            // رسم مخطط التقدم
+            drawProgressChart();
+        }
+        
+        // رسم مخطط التقدم
+        function drawProgressChart() {
+            const ctx = progressChart.getContext('2d');
+            const width = progressChart.width;
+            const height = progressChart.height;
+            
+            // مسح Canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // إذا لم تكن هناك إحصائيات كافية
+            if (stats.correct === 0 && stats.wrong === 0) {
+                ctx.font = "16px 'Tajawal'";
+                ctx.fillStyle = "#a0aec0";
+                ctx.textAlign = "center";
+                ctx.fillText("لا توجد بيانات كافية لعرض الإحصائيات", width / 2, height / 2);
+                return;
+            }
+            
+            // رسم مخطط الأعمدة
+            const barWidth = 40;
+            const spacing = 30;
+            const startX = (width - (barWidth * 2 + spacing)) / 2;
+            
+            // العمود الأول: الإجابات الصحيحة
+            const correctHeight = (stats.correct / (stats.correct + stats.wrong)) * (height - 60);
+            ctx.fillStyle = "#48bb78";
+            ctx.fillRect(startX, height - 40 - correctHeight, barWidth, correctHeight);
+            ctx.fillStyle = "#2d3748";
+            ctx.font = "14px 'Tajawal'";
+            ctx.fillText("صحيحة", startX + barWidth/2, height - 20);
+            ctx.fillText(stats.correct, startX + barWidth/2, height - 50 - correctHeight);
+            
+            // العمود الثاني: الإجابات الخاطئة
+            const wrongHeight = (stats.wrong / (stats.correct + stats.wrong)) * (height - 60);
+            ctx.fillStyle = "#f56565";
+            ctx.fillRect(startX + barWidth + spacing, height - 40 - wrongHeight, barWidth, wrongHeight);
+            ctx.fillStyle = "#2d3748";
+            ctx.fillText("خاطئة", startX + barWidth + spacing + barWidth/2, height - 20);
+            ctx.fillText(stats.wrong, startX + barWidth + spacing + barWidth/2, height - 50 - wrongHeight);
+            
+            // عنوان المخطط
+            ctx.font = "bold 16px 'Tajawal'";
+            ctx.fillStyle = "#2d3748";
+            ctx.fillText("توزيع الإجابات", width / 2, 30);
+        }
+        
+        // تصدير البطاقات
+        function exportCards() {
+            const dataStr = JSON.stringify(cards, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'sumer_cards.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // استيراد البطاقات
+        function importCards(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedCards = JSON.parse(e.target.result);
+                    
+                    if (!Array.isArray(importedCards)) {
+                        throw new Error('الملف لا يحتوي على بيانات صحيحة');
+                    }
+                    
+                    // دمج البطاقات المستوردة مع الموجودة (مع منع التكرار)
+                    const existingIds = new Set(cards.map(card => card.id));
+                    const newCards = importedCards.filter(card => !existingIds.has(card.id));
+                    
+                    cards = [...cards, ...newCards];
+                    saveCards();
+                    
+                    updateCardsDisplay();
+                    updateStats();
+                    updateStorageUsage();
+                    
+                    alert(`تم استيراد ${newCards.length} بطاقة بنجاح`);
+                } catch (error) {
+                    alert('خطأ في استيراد الملف: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // إعادة تعيين حقل الملف للسماح باستيراد نفس الملف مرة أخرى
+            event.target.value = '';
+        }
+        
+        // تحديث عرض استخدام التخزين
+        function updateStorageUsage() {
+            const used = JSON.stringify(cards).length + JSON.stringify(stats).length;
+            const usedKB = Math.round(used / 1024);
+            const maxKB = 5 * 1024; // 5MB
+            const percent = Math.min(100, Math.round((used / (maxKB * 1024)) * 100));
+            
+            storageProgress.style.width = `${percent}%`;
+            storageText.textContent = `مساحة التخزين المستخدمة: ${usedKB}KB / 5MB`;
+        }
+        
+        // حفظ البطاقات في LocalStorage
+        function saveCards() {
+            localStorage.setItem('sumer_cards', JSON.stringify(cards));
+        }
+        
+        // بدء تشغيل التطبيق
+        init();
+    </script>
+</body>
+</html>
