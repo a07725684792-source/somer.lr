@@ -6,8 +6,6 @@
     <meta name="theme-color" content="#1e2a38">
     <meta name="description" content="سومر - محاكي الذاكرة الذكي للطلاب">
     <title>سومر - محاكي الذاكرة الذكي</title>
-     <!-- الفافيكون -->
-    <link rel="icon" type="image/png" href="https://iili.io/KREI5cF.md.png">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -289,10 +287,16 @@
             padding: 2rem;
             border-radius: 15px;
             box-shadow: var(--shadow);
-            background-color: var(--card-bg);
+        }
+
+        .flip-card-front {
+            background-color: var(--primary-turquoise);
+            color: var(--primary-dark);
         }
 
         .flip-card-back {
+            background-color: var(--primary-dark);
+            color: var(--primary-white);
             transform: rotateY(180deg);
             overflow-y: auto;
         }
@@ -379,6 +383,62 @@
             color: var(--primary-turquoise);
         }
 
+        /* نظام الإشعارات */
+        .notification-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notification {
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+            max-width: 350px;
+        }
+
+        .notification.success {
+            background-color: #48bb78;
+        }
+
+        .notification.error {
+            background-color: #f56565;
+        }
+
+        .notification.info {
+            background-color: var(--primary-turquoise);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
         /* التكيف مع الشاشات الصغيرة */
         @media (max-width: 768px) {
             .navbar {
@@ -418,10 +478,23 @@
             .container {
                 padding: 1rem;
             }
+            
+            .notification-container {
+                top: 80px;
+                right: 10px;
+                left: 10px;
+            }
+            
+            .notification {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- نظام الإشعارات -->
+    <div class="notification-container" id="notification-container"></div>
+
     <!-- شريط التنقل العلوي -->
     <nav class="navbar">
         <div class="logo-container">
@@ -432,10 +505,7 @@
         </div>
         
         <div class="nav-links">
-            <a href="#" class="nav-link">الرئيسية</a>
-            <a href="#" class="nav-link">هذا الموقع</a>
-            <a href="#" class="nav-link">الموقع الآخر</a>
-            <button class="theme-toggle" id="theme-toggle">🌙</button>
+            <!-- تم حذف الروابط كما طلبت -->
         </div>
     </nav>
 
@@ -572,7 +642,6 @@
         // العناصر الرئيسية في الواجهة
         const navTabs = document.querySelectorAll('.nav-tab');
         const sections = document.querySelectorAll('.section');
-        const themeToggle = document.getElementById('theme-toggle');
         
         // عناصر قسم البطاقات
         const cardsContainer = document.getElementById('cards-container');
@@ -601,20 +670,16 @@
         const storageProgress = document.getElementById('storage-progress');
         const storageText = document.getElementById('storage-text');
         
+        // نظام الإشعارات
+        const notificationContainer = document.getElementById('notification-container');
+        
         // بيانات التطبيق
         let cards = JSON.parse(localStorage.getItem('sumer_cards')) || [];
         let stats = JSON.parse(localStorage.getItem('sumer_stats')) || { total: 0, correct: 0, wrong: 0 };
         let currentReviewCard = null;
-        let darkMode = localStorage.getItem('sumer_darkMode') === 'true';
         
         // تهيئة التطبيق
         function init() {
-            // تهيئة الوضع الليلي
-            if (darkMode) {
-                document.body.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '☀️';
-            }
-            
             // تحديث واجهة البطاقات
             updateCardsDisplay();
             
@@ -641,9 +706,6 @@
                 });
             });
             
-            // تبديل الوضع الليلي
-            themeToggle.addEventListener('click', toggleDarkMode);
-            
             // إضافة بطاقة جديدة
             addCardBtn.addEventListener('click', addNewCard);
             
@@ -660,26 +722,34 @@
             importFile.addEventListener('change', importCards);
         }
         
+        // عرض إشعار للمستخدم
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            let icon = 'fa-info-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+            if (type === 'error') icon = 'fa-exclamation-circle';
+            
+            notification.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            notificationContainer.appendChild(notification);
+            
+            // إزالة الإشعار بعد 3 ثواني
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
         // تبديل بين أقسام الموقع
         function switchSection(sectionId) {
             sections.forEach(section => {
                 section.classList.remove('active');
             });
             document.getElementById(sectionId).classList.add('active');
-        }
-        
-        // تبديل الوضع الليلي
-        function toggleDarkMode() {
-            darkMode = !darkMode;
-            localStorage.setItem('sumer_darkMode', darkMode);
-            
-            if (darkMode) {
-                document.body.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = '☀️';
-            } else {
-                document.body.removeAttribute('data-theme');
-                themeToggle.textContent = '🌙';
-            }
         }
         
         // تحديث عرض البطاقات
@@ -747,7 +817,7 @@
             const answer = cardAnswerInput.value.trim();
             
             if (!question || !answer) {
-                alert('يرجى ملء كل من السؤال والجواب');
+                showNotification('يرجى ملء كل من السؤال والجواب', 'error');
                 return;
             }
             
@@ -770,7 +840,7 @@
             updateStats();
             updateStorageUsage();
             
-            alert('تمت إضافة البطاقة بنجاح!');
+            showNotification('تمت إضافة البطاقة بنجاح!', 'success');
         }
         
         // بدء عملية المراجعة
@@ -822,9 +892,11 @@
             if (remembered) {
                 stats.correct++;
                 currentReviewCard.level++;
+                showNotification('أحسنت! لقد تذكرت الإجابة الصحيحة', 'success');
             } else {
                 stats.wrong++;
                 currentReviewCard.level = Math.max(0, currentReviewCard.level - 1);
+                showNotification('لا بأس، ستتذكرها في المرة القادمة', 'info');
             }
             
             stats.total++;
@@ -923,6 +995,8 @@
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
+            
+            showNotification('تم تصدير البطاقات بنجاح', 'success');
         }
         
         // استيراد البطاقات
@@ -950,9 +1024,9 @@
                     updateStats();
                     updateStorageUsage();
                     
-                    alert(`تم استيراد ${newCards.length} بطاقة بنجاح`);
+                    showNotification(`تم استيراد ${newCards.length} بطاقة بنجاح`, 'success');
                 } catch (error) {
-                    alert('خطأ في استيراد الملف: ' + error.message);
+                    showNotification('خطأ في استيراد الملف: ' + error.message, 'error');
                 }
             };
             reader.readAsText(file);
@@ -981,5 +1055,4 @@
         init();
     </script>
 </body>
-
 </html>
